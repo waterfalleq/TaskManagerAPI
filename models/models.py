@@ -1,0 +1,27 @@
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from datetime import datetime, timezone
+
+from db.database import Base
+
+
+def utc_now():
+    return datetime.now(timezone.utc)
+
+
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    email = Column(String(100), nullable=False, unique=True)
+    hashed_password = Column(String(128), nullable=False)
+    created_at = Column(DateTime(timezone=True), default=utc_now)
+
+
+class Task(Base):
+    __tablename__ = "tasks"
+    id = Column(Integer, primary_key=True)
+    title = Column(String(100), nullable=False)
+    description = Column(String(1000), nullable=True)
+    deadline = Column(DateTime(timezone=True), nullable=True)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    created_at = Column(DateTime(timezone=True), default=utc_now)
+    updated_at = Column(DateTime(timezone=True), default=utc_now, onupdate=utc_now)

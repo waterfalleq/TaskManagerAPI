@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+.venv/
+
+# Environment variables
+.env
+
+# Alembic compiled cache
+migrations/__pycache__/
+migrations/versions/*.pyc
+
+# Logs
+*.log
+
+# IDE settings
+.idea/

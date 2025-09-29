@@ -5,6 +5,7 @@ Revises: 4ef555ce894e
 Create Date: 2025-09-24 09:37:57.200786
 
 """
+
 from typing import Sequence, Union
 
 from alembic import op
@@ -12,8 +13,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'deb1e855b74d'
-down_revision: Union[str, Sequence[str], None] = '4ef555ce894e'
+revision: str = "deb1e855b74d"
+down_revision: Union[str, Sequence[str], None] = "4ef555ce894e"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

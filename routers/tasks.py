@@ -23,6 +23,7 @@ def create_task_handler(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    """Create a new task for the current user."""
     return create_task(db, task, owner_id=current_user.id)
 
 
@@ -30,8 +31,8 @@ def create_task_handler(
 def get_tasks_by_user_handler(
     db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
-    tasks = get_tasks_by_user(db, current_user.id)
-    return tasks
+    """Retrieve all tasks belonging to the current user."""
+    return get_tasks_by_user(db, current_user.id)
 
 
 @router.get("/{task_id}", response_model=TaskResponse)
@@ -40,6 +41,7 @@ def get_task_by_id_handler(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    """Fetch a specific task if owned by the current user."""
     task = get_task_by_id(db, task_id)
     if task.owner_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not allowed to access this task")
@@ -53,12 +55,12 @@ def update_task_handler(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    """Update a task if owned by the current user."""
     existing_task = get_task_by_id(db, task_id)
     if existing_task.owner_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not allowed to update this task")
 
-    updated_task = update_task(db, task_id, task)
-    return updated_task
+    return update_task(db, task_id, task)
 
 
 @router.delete("/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -67,9 +69,9 @@ def delete_task_handler(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    """Delete a task if owned by the current user."""
     task = get_task_by_id(db, task_id)
     if task.owner_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not allowed to delete this task")
 
     delete_task(db, task_id)
-    return

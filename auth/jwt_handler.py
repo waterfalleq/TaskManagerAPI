@@ -20,24 +20,22 @@ ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60")
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+    """Generate JWT access token with expiration."""
     payload = data.copy()
 
     now = datetime.now(timezone.utc)
     payload["iat"] = int(now.timestamp())
 
-    if expires_delta:
-        expire = now + expires_delta
-    else:
-        expire = now + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = now + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     payload["exp"] = int(expire.timestamp())
 
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 
 def decode_access_token(token: str) -> dict:
+    """Decode and validate JWT access token."""
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload
+        return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     except ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token is expired")
     except JWTError:
@@ -50,6 +48,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 def get_current_user(
     db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)
 ):
+    """Retrieve current authenticated user from token."""
     try:
         payload = decode_access_token(token)
         user_id = payload.get("sub")

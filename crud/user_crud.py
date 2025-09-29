@@ -1,22 +1,22 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 
-
 from models.models import User
 from auth.hash import get_password_hash
 
 
 def get_user_by_email(db: Session, email: str) -> User:
-    user = db.query(User).filter(User.email == email).first()
-    return user
+    """Fetch a user by email."""
+    return db.query(User).filter(User.email == email).first()
 
 
 def get_user_by_id(db: Session, id: int) -> User | None:
-    user = db.query(User).filter(User.id == id).first()
-    return user
+    """Fetch a user by ID."""
+    return db.query(User).filter(User.id == id).first()
 
 
 def create_user(db: Session, email: str, plain_password: str) -> User:
+    """Create a new user with a hashed password."""
     if get_user_by_email(db, email) is not None:
         raise HTTPException(
             status_code=409, detail="Account with this email already exists"

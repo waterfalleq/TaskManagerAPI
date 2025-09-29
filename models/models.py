@@ -5,11 +5,15 @@ from db.database import Base
 
 
 def utc_now():
+    """Return current UTC datetime."""
     return datetime.now(timezone.utc)
 
 
 class User(Base):
+    """Database model for application users."""
+
     __tablename__ = "users"
+
     id = Column(Integer, primary_key=True)
     email = Column(String(100), nullable=False, unique=True)
     hashed_password = Column(String(128), nullable=False)
@@ -17,7 +21,10 @@ class User(Base):
 
 
 class Task(Base):
+    """Database model for user tasks."""
+
     __tablename__ = "tasks"
+
     id = Column(Integer, primary_key=True)
     title = Column(String(100), nullable=False)
     description = Column(String(1000), nullable=True)

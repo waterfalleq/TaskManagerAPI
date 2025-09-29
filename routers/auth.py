@@ -17,6 +17,7 @@ router = APIRouter(prefix="/auth", tags=["authentication"])
     "/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED
 )
 def register_user(user: UserCreate, db: Session = Depends(get_db)) -> UserResponse:
+    """Register a new user with email and password."""
     new_user = create_user(db, email=user.email, plain_password=user.password)
     return new_user
 
@@ -25,6 +26,7 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)) -> UserRespon
 def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ) -> Token:
+    """Authenticate user and return a JWT access token."""
     user = get_user_by_email(db, form_data.username)
     if not user:
         raise HTTPException(

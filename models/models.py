@@ -6,7 +6,6 @@ from db.database import Base
 from .enums import TaskStatus, TaskPriority
 
 
-
 def utc_now():
     """Return current UTC datetime."""
     return datetime.now(timezone.utc)

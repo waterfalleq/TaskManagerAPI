@@ -15,6 +15,7 @@ from crud.task_crud import (
     get_task_by_id,
     update_task,
     delete_task,
+    search_tasks,
 )
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
@@ -57,6 +58,20 @@ def get_tasks_by_user_handler(
         deadline_after=deadline_after,
         limit=limit,
         offset=offset,
+    )
+    return tasks
+
+
+@router.get("/search", response_model=List[TaskResponse])
+def search_tasks_handler(
+    title: str = None,
+    description: str = None,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Search for tasks owned by the current user."""
+    tasks = search_tasks(
+        db=db, owner_id=current_user.id, title=title, description=description
     )
     return tasks
 

@@ -68,3 +68,17 @@ def delete_task(db: Session, task_id: int):
     task = get_task_by_id(db, task_id)
     db.delete(task)
     db.commit()
+
+
+def search_tasks(
+    db: Session, owner_id: int, title: str = None, description: str = None
+) -> List[Task]:
+    """Search for tasks by title and/or description."""
+    query = db.query(Task).filter(Task.owner_id == owner_id)
+
+    if title:
+        query = query.filter(Task.title.ilike(f"%{title}%"))
+    if description:
+        query = query.filter(Task.description.ilike(f"%{description}%"))
+
+    return query.all()

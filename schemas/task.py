@@ -2,6 +2,8 @@ from typing import Optional
 from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
 
+from models.enums import TaskStatus, TaskPriority
+
 
 class TaskBase(BaseModel):
     """Shared fields for task creation and updates."""
@@ -9,6 +11,8 @@ class TaskBase(BaseModel):
     title: str = Field(..., max_length=100)
     description: Optional[str] = Field(None, max_length=1000)
     deadline: Optional[datetime] = None
+    status: Optional[TaskStatus] = TaskStatus.TODO
+    priority: Optional[TaskPriority] = TaskPriority.NONE
 
 
 class TaskCreate(TaskBase):
@@ -23,6 +27,8 @@ class TaskUpdate(TaskBase):
     title: Optional[str] = Field(None, max_length=100)
     description: Optional[str] = Field(None, max_length=1000)
     deadline: Optional[datetime] = None
+    status: Optional[TaskStatus] = None
+    priority: Optional[TaskPriority] = None
 
 
 class TaskResponse(TaskBase):

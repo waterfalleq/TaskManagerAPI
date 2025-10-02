@@ -1,8 +1,10 @@
+from datetime import datetime
+
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 
-from crud.user_crud import get_user_by_id
+from models.enums import TaskPriority, TaskStatus
 from models.models import Task
 from schemas.task import TaskCreate, TaskUpdate
 
@@ -15,9 +17,30 @@ def get_task_by_id(db: Session, task_id: int) -> Task:
     return task
 
 
-def get_tasks_by_user(db: Session, user_id: int) -> List[Task]:
+def get_tasks_by_user(
+    db: Session,
+    user_id: int,
+    status: Optional[TaskStatus] = None,
+    priority: Optional[TaskPriority] = None,
+    deadline_before: Optional[datetime] = None,
+    deadline_after: Optional[datetime] = None,
+    limit: int = 100,
+    offset: int = 0,
+) -> List[Task]:
     """Return all tasks for a specific user."""
-    return db.query(Task).filter(Task.owner_id == user_id).all()
+
+    query = db.query(Task).filter(Task.owner_id == user_id)
+    if status is not None:
+        query = query.filter(Task.status == status)
+    if priority is not None:
+        query = query.filter(Task.priority == priority)
+    if deadline_before is not None:
+        query = query.filter(Task.deadline <= deadline_before)
+    if deadline_after is not None:
+        query = query.filter(Task.deadline >= deadline_after)
+    tasks = query.offset(offset).limit(limit).all()
+
+    return tasks
 
 
 def create_task(db: Session, task_data: TaskCreate, owner_id: int) -> Task:

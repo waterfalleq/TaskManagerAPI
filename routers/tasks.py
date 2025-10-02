@@ -1,9 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from datetime import datetime
+
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 
 from auth.jwt_handler import get_current_user
 from db.database import get_db
+from models.enums import TaskPriority, TaskStatus
 from models.models import User
 from schemas.task import TaskCreate, TaskUpdate, TaskResponse
 from crud.task_crud import (
@@ -29,10 +32,33 @@ def create_task_handler(
 
 @router.get("/", response_model=List[TaskResponse])
 def get_tasks_by_user_handler(
-    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+    status: Optional[TaskStatus] = Query(None, description="Filter by task status"),
+    priority: Optional[TaskPriority] = Query(
+        None, description="Filter by task priority"
+    ),
+    deadline_before: Optional[datetime] = Query(
+        None, description="Tasks with deadline before this date"
+    ),
+    deadline_after: Optional[datetime] = Query(
+        None, description="Tasks with deadline after this date"
+    ),
+    limit: int = Query(100, description="Maximum number of tasks to return"),
+    offset: int = Query(0, description="Number of tasks to skip"),
 ):
     """Retrieve all tasks belonging to the current user."""
-    return get_tasks_by_user(db, current_user.id)
+    tasks = get_tasks_by_user(
+        db=db,
+        user_id=current_user.id,
+        status=status,
+        priority=priority,
+        deadline_before=deadline_before,
+        deadline_after=deadline_after,
+        limit=limit,
+        offset=offset,
+    )
+    return tasks
 
 
 @router.get("/{task_id}", response_model=TaskResponse)

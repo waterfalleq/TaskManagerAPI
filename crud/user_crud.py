@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException
 
 from models.models import User
-from auth.hash import get_password_hash
+from auth.hash import get_password_hash, verify_password
 
 
 def get_user_by_email(db: Session, email: str) -> User:
@@ -39,8 +39,10 @@ def update_user_email(db: Session, user: User, new_email: EmailStr) -> User:
     return user
 
 
-def update_user_password(db: Session, user: User, new_password: str) -> User:
+def update_user_password(db: Session, user: User, old_password: str, new_password: str) -> User:
     """Update an existing user's password."""
+    if not verify_password(old_password, user.hashed_password):
+        raise HTTPException(status_code=400, detail="Incorrect password")
     user.hashed_password = get_password_hash(new_password)
     db.commit()
     db.refresh(user)

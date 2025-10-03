@@ -1,3 +1,4 @@
+from pydantic import EmailStr
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 
@@ -26,3 +27,21 @@ def create_user(db: Session, email: str, plain_password: str) -> User:
     db.commit()
     db.refresh(new_user)
     return new_user
+
+
+def update_user_email(db: Session, user: User, new_email: EmailStr) -> User:
+    """Update an existing user's email address."""
+    if get_user_by_email(db, new_email) is not None:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    user.email = new_email
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+def update_user_password(db: Session, user: User, new_password: str) -> User:
+    """Update an existing user's password."""
+    user.hashed_password = get_password_hash(new_password)
+    db.commit()
+    db.refresh(user)
+    return user

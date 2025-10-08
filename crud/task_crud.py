@@ -26,10 +26,16 @@ def get_tasks_by_user(
     deadline_after: Optional[datetime] = None,
     limit: int = 100,
     offset: int = 0,
+    order_by: str = "created_at",
+    order_dir: str = "desc",
+    show_completed: bool = True,
 ) -> List[Task]:
-    """Return all tasks for a specific user."""
+    """Return all tasks for a specific user, with optional filters and sorting."""
 
+    # filters
     query = db.query(Task).filter(Task.owner_id == user_id)
+    if not show_completed:
+        query = query.filter(Task.status != TaskStatus.DONE)
     if status is not None:
         query = query.filter(Task.status == status)
     if priority is not None:
@@ -38,8 +44,17 @@ def get_tasks_by_user(
         query = query.filter(Task.deadline <= deadline_before)
     if deadline_after is not None:
         query = query.filter(Task.deadline >= deadline_after)
-    tasks = query.offset(offset).limit(limit).all()
 
+    # sort
+    if order_by not in {"created_at", "deadline"}:
+        order_by = "created_at"
+    order_column = getattr(Task, order_by)
+    if order_dir == "desc":
+        query = query.order_by(order_column.desc())
+    else:
+        query = query.order_by(order_column.asc())
+
+    tasks = query.offset(offset).limit(limit).all()
     return tasks
 
 

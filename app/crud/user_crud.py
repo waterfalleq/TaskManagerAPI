@@ -2,8 +2,8 @@ from pydantic import EmailStr
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 
-from models.models import User
-from auth.hash import get_password_hash, verify_password
+from app.models.models import User
+from app.auth.hash import get_password_hash, verify_password
 
 
 def get_user_by_email(db: Session, email: str) -> User:

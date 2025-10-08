@@ -1,6 +1,6 @@
 from alembic import op
 import sqlalchemy as sa
-from models.enums import TaskStatus, TaskPriority
+from app.models.enums import TaskStatus, TaskPriority
 
 # revision identifiers, used by Alembic.
 revision = "aa0c0692e43c"

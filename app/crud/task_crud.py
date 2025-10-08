@@ -4,9 +4,9 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
-from models.enums import TaskPriority, TaskStatus
-from models.models import Task
-from schemas.task import TaskCreate, TaskUpdate
+from app.models.enums import TaskPriority, TaskStatus
+from app.models.models import Task
+from app.schemas.task import TaskCreate, TaskUpdate
 
 
 def get_task_by_id(db: Session, task_id: int) -> Task:

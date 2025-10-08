@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Enum
 from datetime import datetime, timezone
 
-from db.database import Base
+from app.db.database import Base
 from .enums import TaskStatus, TaskPriority
 
 

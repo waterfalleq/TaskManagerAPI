@@ -2,7 +2,7 @@ from typing import Optional
 from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
 
-from models.enums import TaskStatus, TaskPriority
+from app.models.enums import TaskStatus, TaskPriority
 
 
 class TaskBase(BaseModel):

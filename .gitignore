@@ -12,7 +12,7 @@ venv/
 .env
 
 # Alembic compiled cache
-migrations/__pycache__/
+app/migrations/__pycache__/
 migrations/versions/*.pyc
 
 # Logs

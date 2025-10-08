@@ -1,10 +1,15 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 import os
 
-load_dotenv()
-DATABASE_URL = os.getenv("DATABASE_URL")
+load_dotenv(find_dotenv())
+
+ENV = os.getenv("ENV", "local")
+if ENV == "docker":
+    DATABASE_URL = os.getenv("DATABASE_URL_DOCKER")
+else:
+    DATABASE_URL = os.getenv("DATABASE_URL_LOCAL")
 
 engine = create_engine(
     DATABASE_URL, echo=True  # Log SQL queries, set False in production

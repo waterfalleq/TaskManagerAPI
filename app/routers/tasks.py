@@ -4,12 +4,12 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
-from auth.jwt_handler import get_current_user
-from db.database import get_db
-from models.enums import TaskPriority, TaskStatus
-from models.models import User
-from schemas.task import TaskCreate, TaskUpdate, TaskResponse
-from crud.task_crud import (
+from app.auth.jwt_handler import get_current_user
+from app.db.database import get_db
+from app.models.enums import TaskPriority, TaskStatus
+from app.models.models import User
+from app.schemas.task import TaskCreate, TaskUpdate, TaskResponse
+from app.crud.task_crud import (
     create_task,
     get_tasks_by_user,
     get_task_by_id,

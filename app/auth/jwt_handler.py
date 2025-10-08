@@ -9,8 +9,8 @@ import os
 
 from sqlalchemy.orm import Session
 
-from crud.user_crud import get_user_by_id
-from db.database import get_db
+from app.crud.user_crud import get_user_by_id
+from app.db.database import get_db
 
 load_dotenv()
 

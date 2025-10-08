@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from auth.jwt_handler import get_current_user
-from crud.user_crud import update_user_email, update_user_password
-from db.database import get_db
-from models.models import User
-from schemas.user import UserResponse, UpdateEmailRequest, UpdatePasswordRequest
+from app.auth.jwt_handler import get_current_user
+from app.crud.user_crud import update_user_email, update_user_password
+from app.db.database import get_db
+from app.models.models import User
+from app.schemas.user import UserResponse, UpdateEmailRequest, UpdatePasswordRequest
 
 router = APIRouter(prefix="/users", tags=["users"])
 

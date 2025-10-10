@@ -1,6 +1,6 @@
 from os import getenv
 
-from sqlalchemy import create_engine
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv, find_dotenv
 
@@ -12,17 +12,12 @@ if ENV == "docker":
 else:
     DATABASE_URL = getenv("DATABASE_URL_LOCAL")
 
-engine = create_engine(
-    DATABASE_URL, echo=True  # Log SQL queries, set False in production
-)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+async_engine = create_async_engine(DATABASE_URL, echo=True)
+async_session = sessionmaker(async_engine, class_=AsyncSession, expire_on_commit=False)
 Base = declarative_base()
 
 
-def get_db():
+async def get_db() -> AsyncSession:
     """Yield a database session and ensure it closes after use."""
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+    async with async_session() as session:
+        yield session

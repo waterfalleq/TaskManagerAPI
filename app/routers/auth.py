@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy.orm import Session
 from starlette import status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth.hash import verify_password
 from app.auth.jwt_handler import create_access_token
@@ -15,18 +15,20 @@ router = APIRouter(prefix="/auth", tags=["authentication"])
 @router.post(
     "/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED
 )
-def register_user(user: UserCreate, db: Session = Depends(get_db)) -> UserResponse:
+async def register_user(
+    user: UserCreate, db: AsyncSession = Depends(get_db)
+) -> UserResponse:
     """Register a new user with email and password."""
-    new_user = create_user(db, email=user.email, plain_password=user.password)
+    new_user = await create_user(db, email=user.email, plain_password=user.password)
     return new_user
 
 
 @router.post("/token", response_model=Token)
-def login_for_access_token(
-    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+async def login_for_access_token(
+    form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)
 ) -> Token:
     """Authenticate user and return a JWT access token."""
-    user = get_user_by_email(db, form_data.username)
+    user = await get_user_by_email(db, form_data.username)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

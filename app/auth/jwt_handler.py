@@ -7,7 +7,7 @@ from jose import jwt, JWTError, ExpiredSignatureError
 from dotenv import load_dotenv
 import os
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud.user_crud import get_user_by_id
 from app.db.database import get_db
@@ -45,8 +45,8 @@ def decode_access_token(token: str) -> dict:
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
 
-def get_current_user(
-    db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)
+async def get_current_user(
+    db: AsyncSession = Depends(get_db), token: str = Depends(oauth2_scheme)
 ):
     """Retrieve current authenticated user from token."""
     try:
@@ -58,14 +58,17 @@ def get_current_user(
                 detail="Invalid token",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-        user = get_user_by_id(db, user_id)
+
+        user = await get_user_by_id(db, int(user_id))
         if user is None:
             raise HTTPException(
                 status_code=401,
                 detail="User not found",
                 headers={"WWW-Authenticate": "Bearer"},
             )
+
         return user
+
     except ExpiredSignatureError:
         raise HTTPException(
             status_code=401,
